@@ -1,0 +1,4 @@
+# Vercel falls back to .gitignore only when this file is absent, so repeat the basics.
+node_modules
+.next
+out

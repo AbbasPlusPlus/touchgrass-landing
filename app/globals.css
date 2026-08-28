@@ -1,0 +1,296 @@
+@import "tailwindcss";
+
+/* --------------------------------------------------------------------------
+   Design tokens — "Paper Garden".
+   Values copied from the app: ../touchgrass/Sources/TGOverlay/OverlayPalette.swift
+   (the `Hex` table) and ../touchgrass/DESIGN.md. The site is dark-only, so each
+   token below is the app's dark-mode value; the light values are kept in
+   comments so the two stay easy to diff.
+   -------------------------------------------------------------------------- */
+@theme {
+  --color-paper: #20241d; /* light #f2eede */
+  --color-paper-2: #2a2f26; /* light #faf7ec */
+  --color-stone: #383e32; /* light #e3dcc8 */
+  --color-ink: #e7e2d0; /* light #3d443a */
+  --color-ink-2: #a9ac97; /* light #6e7361 */
+  --color-matcha: #8ba579; /* light #5f7355 */
+  --color-matcha-deep: #dfe4c8; /* light #47563f */
+  --color-clay: #c98a74; /* light #b06a56 */
+  --color-moss: #7d9a6c;
+  --color-pollen: #d8b45e;
+  --color-on-matcha: #252a1e; /* type that sits on a matcha fill */
+  --color-ink-green: #161a13; /* the dark break-screen wash */
+
+  /* The app is SF Rounded throughout. `ui-rounded` gets Mac visitors the real
+     thing; Nunito is the fallback everywhere else. Fraunces is bundled with the
+     app and used for the big numerals — same font, same role, here. */
+  --font-sans: ui-rounded, var(--font-nunito), -apple-system, ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --ease-rise: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+:root {
+  /* PaperGrain.swift tiles noise at ~4% alpha over every matte surface. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #11150f;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-matcha) 42%, transparent);
+  color: #f4f1e0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-pollen);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Fixed backdrop stack. Sky → glow → field(far/mid) → vignette → motes →
+   field(near) → grain → page.
+   -------------------------------------------------------------------------- */
+.tg-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tg-sky {
+  z-index: 0;
+  background: linear-gradient(
+    180deg,
+    #131a1c 0%,
+    #1b2420 18%,
+    #2b3324 38%,
+    #4a4a29 56%,
+    #7a5f30 72%,
+    #4c4223 86%,
+    #22261a 100%
+  );
+}
+
+/* The last light on the horizon. Painted across the whole viewport rather than
+   into a 60vh box: the gradient peaks at 92vh, so a box ending there would cut the
+   glow at its brightest and leave a hard line across the field. Same gradient,
+   no element edge for it to end on. */
+.tg-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    55vw 36vh at 50% 92vh,
+    rgba(255, 206, 120, 0.55) 0%,
+    rgba(255, 180, 90, 0.22) 34%,
+    rgba(255, 170, 80, 0) 70%
+  );
+}
+
+.tg-field {
+  z-index: 2;
+  overflow: hidden;
+}
+
+.tg-vignette {
+  z-index: 4;
+  background: radial-gradient(120% 90% at 50% 34%, rgba(10, 14, 9, 0) 30%, rgba(10, 14, 9, 0.55) 100%);
+}
+
+.tg-motes {
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+}
+
+.tg-front {
+  z-index: 6;
+  overflow: hidden;
+}
+
+.tg-grain {
+  z-index: 7;
+  background-image: var(--grain);
+}
+
+/* --------------------------------------------------------------------------
+   Entrance — the app lifts each element 16pt over a soft spring, 80ms apart
+   (BreakView.rise). Same idea here.
+   -------------------------------------------------------------------------- */
+@keyframes tg-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: tg-rise 0.9s var(--ease-rise) both;
+  animation-delay: var(--rise-delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .rise {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Surfaces — glass is chrome, paper is content (DESIGN.md).
+   -------------------------------------------------------------------------- */
+
+/* A quiet pill / glass surface: paper2 wash, bone rim. Matches OverlayPalette
+   glassWash + glassRim at their dark values. */
+@utility glass {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-paper-2) 44%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 22%, transparent);
+  backdrop-filter: blur(24px) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #ffffff 24%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #000000 20%, transparent),
+    0 12px 30px -14px color-mix(in srgb, #000000 58%, transparent);
+}
+
+/* A matte paper surface: paper2, stone hairline, a whisper of grain. */
+@utility paper-card {
+  /* Liquid-glass card. True refraction needs shaders; this fakes the read with an opaque
+     paper wash over heavy blur+saturation, a bevel (bright top/side rims, dark under-rim),
+     and — via .paper-card::before below — a Fresnel-ish top sheen and a diagonal glare streak. */
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-paper-2) 72%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 24%, transparent);
+  backdrop-filter: blur(30px) saturate(1.45);
+  box-shadow:
+    inset 0 1.5px 0 color-mix(in srgb, #ffffff 30%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #000000 24%, transparent),
+    inset 1.5px 0 0 color-mix(in srgb, #ffffff 10%, transparent),
+    inset -1.5px 0 0 color-mix(in srgb, #ffffff 7%, transparent),
+    0 26px 60px -26px color-mix(in srgb, #000000 65%, transparent);
+}
+
+@layer components {
+  /* The glare pass: a diagonal specular streak plus a soft top light pool, clipped to the
+     card's radius. Sits above the backdrop, below the content (content has its own stacking). */
+  .paper-card::before,
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        115deg,
+        transparent 18%,
+        color-mix(in srgb, #ffffff 16%, transparent) 30%,
+        color-mix(in srgb, #ffffff 5%, transparent) 40%,
+        transparent 52%
+      ),
+      radial-gradient(140% 70% at 50% -20%, color-mix(in srgb, #ffffff 14%, transparent), transparent 55%);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+    /* A step above TGType.pill — this is the one thing the page is asking for. */
+    font-weight: 700;
+    font-size: 16.5px;
+    letter-spacing: 0.005em;
+    padding: 15px 30px;
+    border-radius: 999px;
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.12s ease,
+      background 0.12s ease;
+  }
+
+  /* The app's one loud button: matcha fill, paper type. */
+  .btn-primary {
+    background: var(--color-matcha);
+    color: var(--color-on-matcha);
+    box-shadow: 0 16px 34px -18px color-mix(in srgb, var(--color-matcha) 75%, transparent);
+  }
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--color-matcha) 88%, #fff);
+    transform: translateY(-2px);
+  }
+
+  /* …and the quiet tier: paper-glass with a bone rim. */
+  .btn-ghost {
+    background: color-mix(in srgb, var(--color-paper-2) 26%, transparent);
+    color: var(--color-ink);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 20%, transparent);
+    backdrop-filter: blur(12px);
+  }
+  .btn-ghost:hover {
+    /* BreakTone.hoverWash — bone at 10%. */
+    background: color-mix(in srgb, var(--color-ink) 10%, color-mix(in srgb, var(--color-paper-2) 26%, transparent));
+    transform: translateY(-2px);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  /* Kill the label's line-box slack so text and icon share a true optical center. */
+  .btn {
+    line-height: 1;
+  }
+  .btn svg {
+    flex-shrink: 0;
+    display: block;
+  }
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -140%);
+  z-index: 50;
+  padding: 10px 18px;
+  border-radius: 0 0 12px 12px;
+  background: var(--color-matcha);
+  color: var(--color-on-matcha);
+  font-weight: 700;
+  font-size: 14px;
+  transition: transform 0.16s var(--ease-rise);
+}
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
+}
