@@ -90,7 +90,7 @@ export function BreakScreen() {
       aria-label="What a break looks like"
       /* A tall runway with a pinned viewport inside it. The laptop stays centred on
          screen for the whole of the open, instead of scrolling past while it unfolds. */
-      className="mb-runway relative -mt-[26svh] h-[200svh]"
+      className="mb-runway relative h-[200svh]"
       ref={runway}
     >
       <div className="pointer-events-none sticky top-0 flex h-svh items-center justify-center px-5 sm:px-7">

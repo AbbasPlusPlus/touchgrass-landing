@@ -368,73 +368,63 @@ label[for] {
   perspective: 2200px;
 }
 
-/* Resting at +8deg, leaning away from the viewer. With the origin at the hinge a
-   positive rotateX pushes the top edge back, which is how a laptop past 90deg sits and
-   which way the chassis art is already drawn. Negative leans the screen forward into
-   your face: the top edge reads as nearer than the bottom and it never looks open. */
+/* The laptop starts open and shuts as you scroll — you're being asked to step away
+   from the screen, so a machine folding closed is the right way round. Resting state
+   is therefore open: +4deg, leaning away from the viewer. With the origin at the hinge
+   a positive rotateX pushes the top edge back, which is the angle the chassis art is
+   already drawn at; negative leans the screen forward into your face. */
 .mb-lid {
   transform: rotateX(4deg);
   transform-origin: bottom center;
   will-change: transform;
 }
 
-/* -72deg, not -90: a lid rotated flat is edge-on and disappears. This is the steepest
-   angle that still reads as a closed laptop from the front. */
-.mb-runway.is-armed .mb-lid {
-  transform: rotateX(-72deg);
-}
-
-/* The lid hinges from its bottom edge, so a shut laptop is only the bottom third of
-   its own layout box — centring the box leaves it low with a screen of empty field
-   above it. Ride it up while it's shut and settle to centre as it opens, so what you
-   actually see stays in the middle. */
-.mb-runway.is-armed .mb-shift {
-  transform: translateY(-42%);
-}
-
 /* Fallback for browsers without scroll-driven animations: a one-shot, fired by the
    IntersectionObserver in BreakScreen. */
 .mb-runway.is-armed.is-open .mb-lid {
-  animation: lid-open 1.1s cubic-bezier(0.16, 0.9, 0.24, 1) forwards;
+  animation: lid-close 1.1s cubic-bezier(0.16, 0.9, 0.24, 1) forwards;
 }
 
 .mb-runway.is-armed.is-open .mb-shift {
-  animation: lid-settle 1.1s cubic-bezier(0.16, 0.9, 0.24, 1) forwards;
+  animation: lid-lift 1.1s cubic-bezier(0.16, 0.9, 0.24, 1) forwards;
 }
 
 @supports (animation-timeline: view()) {
   .mb-runway.is-armed .mb-lid,
   .mb-runway.is-armed.is-open .mb-lid {
-    animation: lid-open 1s linear both;
+    animation: lid-close 1s linear both;
     animation-timeline: --laptop;
-    animation-range: cover 26% cover 48%;
+    /* The runway is 200svh around a 100svh pin, so the laptop is held still between
+       cover 33% and 67%. Shut it inside that window and it never folds while sliding
+       off the top. */
+    animation-range: cover 36% cover 58%;
   }
 
   .mb-runway.is-armed .mb-shift,
   .mb-runway.is-armed.is-open .mb-shift {
-    animation: lid-settle 1s linear both;
+    animation: lid-lift 1s linear both;
     animation-timeline: --laptop;
-    animation-range: cover 26% cover 48%;
+    animation-range: cover 36% cover 58%;
   }
 }
 
-/* Rotation only — fading the lid in as it turned was what made it look like a ghost
-   mid-open, with the field showing through the screen. */
-@keyframes lid-open {
+@keyframes lid-close {
   from {
-    transform: rotateX(-72deg);
-  }
-  to {
     transform: rotateX(4deg);
   }
+  to {
+    transform: rotateX(-72deg);
+  }
 }
 
-@keyframes lid-settle {
+/* A shut lid occupies only the bottom third of its own layout box, so without this the
+   laptop appears to sink as it folds. Riding up keeps what you see centred. */
+@keyframes lid-lift {
   from {
-    transform: translateY(-42%);
+    transform: translateY(0);
   }
   to {
-    transform: translateY(0);
+    transform: translateY(-42%);
   }
 }
 
