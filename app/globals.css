@@ -379,8 +379,17 @@ label[for] {
   will-change: transform;
 }
 
+/* The panel is lit until something dims it. */
+.mb-dim {
+  opacity: 0;
+}
+
 /* Fallback for browsers without scroll-driven animations: a one-shot, fired by the
    IntersectionObserver in BreakScreen. */
+.mb-runway.is-armed.is-open .mb-dim {
+  animation: screen-dim 1.1s cubic-bezier(0.16, 0.9, 0.24, 1) forwards;
+}
+
 .mb-runway.is-armed.is-open .mb-lid {
   animation: lid-close 1.1s cubic-bezier(0.16, 0.9, 0.24, 1) forwards;
 }
@@ -405,6 +414,24 @@ label[for] {
     animation: lid-lift 1s linear both;
     animation-timeline: --laptop;
     animation-range: cover 36% cover 58%;
+  }
+
+  /* Ends a touch before the lid does, so the screen is dark by the time the hinge
+     closes on it rather than still glowing through the last few degrees. */
+  .mb-runway.is-armed .mb-dim,
+  .mb-runway.is-armed.is-open .mb-dim {
+    animation: screen-dim 1s linear both;
+    animation-timeline: --laptop;
+    animation-range: cover 36% cover 54%;
+  }
+}
+
+@keyframes screen-dim {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.94;
   }
 }
 
@@ -439,6 +466,13 @@ label[for] {
   .mb-runway.is-armed .mb-shift,
   .mb-runway.is-armed.is-open .mb-shift {
     transform: none;
+    animation: none;
+    animation-timeline: auto;
+  }
+
+  .mb-runway.is-armed .mb-dim,
+  .mb-runway.is-armed.is-open .mb-dim {
+    opacity: 0;
     animation: none;
     animation-timeline: auto;
   }

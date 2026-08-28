@@ -65,6 +65,9 @@ export function MacbookFrame({ children }: { children: ReactNode }) {
             aria-hidden="true"
           />
 
+          {/* the screen going dark as the lid comes down */}
+          <div className="mb-dim pointer-events-none absolute inset-0 bg-[#0d1109]" aria-hidden="true" />
+
           {/* the notch — a cutout in the panel, so it paints over the screen contents */}
           <div
             className="absolute top-0 left-1/2 -translate-x-1/2 rounded-b-[5px] bg-black"
