@@ -165,60 +165,76 @@ body {
    Surfaces — glass is chrome, paper is content (DESIGN.md).
    -------------------------------------------------------------------------- */
 
-/* A quiet pill / glass surface: paper2 wash, bone rim. Matches OverlayPalette
-   glassWash + glassRim at their dark values. */
+/* Glass, the way DESIGN.md specifies it: tinted toward paper, warm, never gray.
+   The tint stays low and the blur does the work — a wash opaque enough to hide the
+   field behind it isn't glass, it's plastic. Saturation is pushed hard so the dusk
+   colours bloom through rather than going muddy. */
 @utility glass {
   position: relative;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--color-paper-2) 44%, transparent);
-  border: 1px solid color-mix(in srgb, #ffffff 22%, transparent);
-  backdrop-filter: blur(24px) saturate(1.4);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #ffffff 24%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, #000000 20%, transparent),
-    0 12px 30px -14px color-mix(in srgb, #000000 58%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-ink) 9%, transparent) 0%,
+      color-mix(in srgb, var(--color-ink) 2%, transparent) 42%,
+      transparent 72%
+    ),
+    color-mix(in srgb, var(--color-paper-2) 18%, transparent);
+  backdrop-filter: blur(20px) saturate(185%);
+  -webkit-backdrop-filter: blur(20px) saturate(185%);
+  border: none;
+  box-shadow: 0 10px 26px -14px color-mix(in srgb, #000000 62%, transparent);
 }
 
-/* A matte paper surface: paper2, stone hairline, a whisper of grain. */
+/* The same material at card scale: more blur, a fraction more tint so body copy
+   stays legible over the field. */
 @utility paper-card {
-  /* Liquid-glass card. True refraction needs shaders; this fakes the read with an opaque
-     paper wash over heavy blur+saturation, a bevel (bright top/side rims, dark under-rim),
-     and — via .paper-card::before below — a Fresnel-ish top sheen and a diagonal glare streak. */
   position: relative;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--color-paper-2) 72%, transparent);
-  border: 1px solid color-mix(in srgb, #ffffff 24%, transparent);
-  backdrop-filter: blur(30px) saturate(1.45);
-  box-shadow:
-    inset 0 1.5px 0 color-mix(in srgb, #ffffff 30%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, #000000 24%, transparent),
-    inset 1.5px 0 0 color-mix(in srgb, #ffffff 10%, transparent),
-    inset -1.5px 0 0 color-mix(in srgb, #ffffff 7%, transparent),
-    0 26px 60px -26px color-mix(in srgb, #000000 65%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-ink) 8%, transparent) 0%,
+      color-mix(in srgb, var(--color-ink) 2%, transparent) 38%,
+      transparent 66%
+    ),
+    color-mix(in srgb, var(--color-paper-2) 42%, transparent);
+  backdrop-filter: blur(30px) saturate(185%);
+  -webkit-backdrop-filter: blur(30px) saturate(185%);
+  border: none;
+  box-shadow: 0 30px 64px -30px color-mix(in srgb, #000000 70%, transparent);
 }
 
 @layer components {
-  /* The glare pass: a diagonal specular streak plus a soft top light pool, clipped to the
-     card's radius. Sits above the backdrop, below the content (content has its own stacking). */
-  .paper-card::before,
-  .glass::before {
+  /* The rim. A real edge catches light unevenly — bright where it faces the light,
+     almost gone on the shadow side — so this is a gradient ring rather than four flat
+     inset lines, which is what made the old version read as a bevel. Bone, not white:
+     a gray rim on a warm field is the thing that gives fake glass away. */
+  .glass::before,
+  .paper-card::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
+    padding: 1px;
     pointer-events: none;
-    background:
-      linear-gradient(
-        115deg,
-        transparent 18%,
-        color-mix(in srgb, #ffffff 16%, transparent) 30%,
-        color-mix(in srgb, #ffffff 5%, transparent) 40%,
-        transparent 52%
-      ),
-      radial-gradient(140% 70% at 50% -20%, color-mix(in srgb, #ffffff 14%, transparent), transparent 55%);
+    background: linear-gradient(
+      152deg,
+      color-mix(in srgb, var(--color-ink) 38%, transparent) 0%,
+      color-mix(in srgb, var(--color-ink) 10%, transparent) 26%,
+      color-mix(in srgb, var(--color-ink) 3%, transparent) 52%,
+      color-mix(in srgb, var(--color-ink) 16%, transparent) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
   }
 
   .btn {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -240,25 +256,76 @@ body {
 
   /* The app's one loud button: matcha fill, paper type. */
   .btn-primary {
-    background: var(--color-matcha);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-matcha) 88%, #ffffff) 0%,
+      var(--color-matcha) 55%,
+      color-mix(in srgb, var(--color-matcha) 92%, #000000) 100%
+    );
     color: var(--color-on-matcha);
-    box-shadow: 0 16px 34px -18px color-mix(in srgb, var(--color-matcha) 75%, transparent);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, #ffffff 40%, transparent),
+      0 14px 30px -16px color-mix(in srgb, var(--color-matcha) 80%, transparent),
+      0 2px 6px -2px color-mix(in srgb, #000000 40%, transparent);
   }
   .btn-primary:hover {
-    background: color-mix(in srgb, var(--color-matcha) 88%, #fff);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-matcha) 78%, #ffffff) 0%,
+      color-mix(in srgb, var(--color-matcha) 92%, #ffffff) 55%,
+      var(--color-matcha) 100%
+    );
     transform: translateY(-2px);
   }
 
-  /* …and the quiet tier: paper-glass with a bone rim. */
+  /* …and the quiet tier: the same glass, at pill scale. */
   .btn-ghost {
-    background: color-mix(in srgb, var(--color-paper-2) 26%, transparent);
     color: var(--color-ink);
-    border: 1px solid color-mix(in srgb, var(--color-ink) 20%, transparent);
-    backdrop-filter: blur(12px);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-ink) 12%, transparent) 0%,
+        color-mix(in srgb, var(--color-ink) 3%, transparent) 48%,
+        transparent 78%
+      ),
+      color-mix(in srgb, var(--color-paper-2) 20%, transparent);
+    backdrop-filter: blur(18px) saturate(185%);
+    -webkit-backdrop-filter: blur(18px) saturate(185%);
+    box-shadow: 0 10px 24px -14px color-mix(in srgb, #000000 60%, transparent);
+  }
+  .btn-ghost::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background: linear-gradient(
+      152deg,
+      color-mix(in srgb, var(--color-ink) 42%, transparent) 0%,
+      color-mix(in srgb, var(--color-ink) 12%, transparent) 30%,
+      color-mix(in srgb, var(--color-ink) 4%, transparent) 55%,
+      color-mix(in srgb, var(--color-ink) 20%, transparent) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
   }
   .btn-ghost:hover {
     /* BreakTone.hoverWash — bone at 10%. */
-    background: color-mix(in srgb, var(--color-ink) 10%, color-mix(in srgb, var(--color-paper-2) 26%, transparent));
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-ink) 16%, transparent) 0%,
+        color-mix(in srgb, var(--color-ink) 6%, transparent) 48%,
+        transparent 78%
+      ),
+      color-mix(in srgb, var(--color-paper-2) 26%, transparent);
     transform: translateY(-2px);
   }
 
@@ -273,6 +340,116 @@ body {
   .btn svg {
     flex-shrink: 0;
     display: block;
+  }
+}
+
+/* Tailwind's Preflight resets buttons to the default arrow; anything clickable
+   should say so. */
+button:not(:disabled),
+[role="button"],
+summary,
+label[for] {
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   The MacBook lid, hinging open when the mock scrolls into view.
+   `is-armed` is only added on the client, so with JS off the lid renders open.
+   -------------------------------------------------------------------------- */
+/* The runway publishes a timeline its descendants can animate off. */
+.mb-runway {
+  view-timeline-name: --laptop;
+  view-timeline-axis: block;
+}
+
+.mb-stage {
+  /* Shallower than it looks: a tighter perspective makes the half-open lid read as a
+     collapsing trapezoid rather than a laptop. */
+  perspective: 2200px;
+}
+
+/* Resting at -8deg rather than flat. The chassis art draws the base as if seen from
+   slightly above, so a lid at a true 0deg reads as a 2D rectangle pasted onto a 3D
+   deck. A real laptop opens past 90deg anyway. */
+.mb-lid {
+  transform: rotateX(-8deg);
+  transform-origin: bottom center;
+  will-change: transform;
+}
+
+/* -72deg, not -90: a lid rotated flat is edge-on and disappears. This is the steepest
+   angle that still reads as a closed laptop from the front. */
+.mb-runway.is-armed .mb-lid {
+  transform: rotateX(-72deg);
+}
+
+/* The lid hinges from its bottom edge, so a shut laptop is only the bottom third of
+   its own layout box — centring the box leaves it low with a screen of empty field
+   above it. Ride it up while it's shut and settle to centre as it opens, so what you
+   actually see stays in the middle. */
+.mb-runway.is-armed .mb-shift {
+  transform: translateY(-33%);
+}
+
+/* Fallback for browsers without scroll-driven animations: a one-shot, fired by the
+   IntersectionObserver in BreakScreen. */
+.mb-runway.is-armed.is-open .mb-lid {
+  animation: lid-open 1.1s cubic-bezier(0.16, 0.9, 0.24, 1) forwards;
+}
+
+.mb-runway.is-armed.is-open .mb-shift {
+  animation: lid-settle 1.1s cubic-bezier(0.16, 0.9, 0.24, 1) forwards;
+}
+
+@supports (animation-timeline: view()) {
+  .mb-runway.is-armed .mb-lid,
+  .mb-runway.is-armed.is-open .mb-lid {
+    animation: lid-open 1s linear both;
+    animation-timeline: --laptop;
+    animation-range: cover 30% cover 52%;
+  }
+
+  .mb-runway.is-armed .mb-shift,
+  .mb-runway.is-armed.is-open .mb-shift {
+    animation: lid-settle 1s linear both;
+    animation-timeline: --laptop;
+    animation-range: cover 30% cover 52%;
+  }
+}
+
+/* Rotation only — fading the lid in as it turned was what made it look like a ghost
+   mid-open, with the field showing through the screen. */
+@keyframes lid-open {
+  from {
+    transform: rotateX(-72deg);
+  }
+  to {
+    transform: rotateX(-8deg);
+  }
+}
+
+@keyframes lid-settle {
+  from {
+    transform: translateY(-33%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mb-runway.is-armed .mb-lid,
+  .mb-runway.is-armed.is-open .mb-lid {
+    transform: rotateX(-8deg);
+    animation: none;
+    animation-timeline: auto;
+  }
+
+  .mb-runway.is-armed .mb-shift,
+  .mb-runway.is-armed.is-open .mb-shift {
+    transform: none;
+    animation: none;
+    animation-timeline: auto;
   }
 }
 

@@ -3,7 +3,7 @@ import { site } from "@/lib/site";
 
 export function Hero() {
   return (
-    <header className="mx-auto max-w-[880px] px-5 pt-24 text-center sm:px-7 sm:pt-28">
+    <header className="mx-auto flex min-h-svh max-w-[880px] flex-col items-center justify-center px-5 py-16 text-center sm:px-7">
       {/* the app icon on its paper squircle */}
       <div
         className="rise mx-auto mb-7 grid h-24 w-24 place-items-center rounded-[24px] border border-stone bg-[color-mix(in_srgb,var(--color-paper-2)_72%,transparent)] backdrop-blur-[16px]"

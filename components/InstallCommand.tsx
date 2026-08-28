@@ -27,7 +27,11 @@ function CommandRow({ label, command }: { label: string; command: string }) {
         }}
         aria-label={`Copy ${label} command`}
       >
-        <span className="overflow-x-auto whitespace-nowrap">{command}</span>
+        {/* Long commands still scroll, but the bar itself is hidden — Copy is the
+            intended path, and a chrome scrollbar inside a glass pill looks broken. */}
+        <span className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {command}
+        </span>
         <span className="ml-auto shrink-0 rounded-md border border-ink/15 px-2 py-1 text-[11px] font-semibold tracking-wide opacity-70 group-hover:opacity-100">
           {copied ? "Copied" : "Copy"}
         </span>

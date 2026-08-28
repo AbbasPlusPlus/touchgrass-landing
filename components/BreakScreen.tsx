@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronRight2, LockGlyph } from "@/components/icons";
+import { MacbookFrame } from "@/components/MacbookFrame";
 
 /**
  * The app's break screen, at 1:1 with the real thing.
@@ -13,11 +14,11 @@ import { ChevronRight2, LockGlyph } from "@/components/icons";
  * the dark-appearance rendering of it.
  *
  * Everything is sized in `cqw` against the screen's own width, the way a screenshot scales.
- * The reference width is 1180pt rather than a real 1512pt display, so the smallest chrome
+ * The reference width is 1080pt rather than a real 1512pt display, so the smallest chrome
  * stays readable on the page; the proportions between elements are the app's.
  */
 
-const REF = 1180;
+const REF = 1080;
 /** A point of the app's type scale, as a share of the mock's width. */
 const pt = (v: number) => `${((v / REF) * 100).toFixed(3)}cqw`;
 /** …with a floor and a ceiling, so the mock survives a phone and a 4K monitor. */
@@ -34,6 +35,28 @@ function mmss(total: number) {
 export function BreakScreen() {
   const [clock, setClock] = useState("17:41");
   const [left, setLeft] = useState(START);
+  const runway = useRef<HTMLElement>(null);
+
+  // The lid hinges open the first time it scrolls into view. Driven by classes on the
+  // element rather than React state: it's a one-way DOM effect, and it means the server
+  // render (and anyone without JS) gets an already-open laptop instead of a flat one.
+  useEffect(() => {
+    const el = runway.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    el.classList.add("is-armed");
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        el.classList.add("is-open");
+        io.disconnect();
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   // The visitor's own clock, like the one on the break screen. Server-rendered as the poster
   // frame so there is nothing to mismatch on hydration.
@@ -57,16 +80,17 @@ export function BreakScreen() {
     <section
       id="demo"
       aria-label="What a break looks like"
-      className="rise relative mx-auto mt-14 max-w-[940px] scroll-mt-20 px-5 sm:mt-16 sm:px-7"
-      style={{ "--rise-delay": ".36s" } as React.CSSProperties}
+      /* A tall runway with a pinned viewport inside it. The laptop stays centred on
+         screen for the whole of the open, instead of scrolling past while it unfolds. */
+      className="mb-runway relative h-[200svh]"
+      ref={runway}
     >
+      <div className="sticky top-0 flex h-svh items-center justify-center px-5 sm:px-7">
+      <div className="mb-shift w-full max-w-[1080px] drop-shadow-[0_60px_80px_rgba(0,0,0,.55)]">
+      <MacbookFrame>
       <div
-        className="relative aspect-4/3 overflow-hidden rounded-2xl bg-[#242a20] sm:aspect-16/10"
-        style={{
-          containerType: "inline-size",
-          boxShadow:
-            "0 70px 110px -46px rgba(0,0,0,.9), 0 0 0 1px color-mix(in srgb, var(--color-ink) 10%, transparent), 0 0 90px -30px rgba(160,190,120,.28)",
-        }}
+        className="relative h-full w-full bg-[#242a20]"
+        style={{ containerType: "inline-size" }}
       >
         {/* the frosted desktop behind the break screen */}
         <div
@@ -88,7 +112,8 @@ export function BreakScreen() {
         {/* clock — OverlayType.clock, 15pt medium, tracking 1.2 */}
         <div
           className="absolute inset-x-0 text-center font-medium text-ink-2 tabular-nums"
-          style={{ top: `max(16px,${pt(24)})`, fontSize: ptc(15, 9.5, 13), letterSpacing: pt(1.2) }}
+          // 9.02 chassis units of notch = ~19.4pt at this scale; clear it, then the app's own 24pt.
+          style={{ top: `max(22px,${pt(43)})`, fontSize: ptc(15, 9.5, 13), letterSpacing: pt(1.2) }}
         >
           <time suppressHydrationWarning>{clock}</time>
         </div>
@@ -189,6 +214,9 @@ export function BreakScreen() {
             <span>twice to skip</span>
           </div>
         </div>
+      </div>
+      </MacbookFrame>
+      </div>
       </div>
     </section>
   );
