@@ -368,11 +368,12 @@ label[for] {
   perspective: 2200px;
 }
 
-/* Resting at -8deg rather than flat. The chassis art draws the base as if seen from
-   slightly above, so a lid at a true 0deg reads as a 2D rectangle pasted onto a 3D
-   deck. A real laptop opens past 90deg anyway. */
+/* Resting at +8deg, leaning away from the viewer. With the origin at the hinge a
+   positive rotateX pushes the top edge back, which is how a laptop past 90deg sits and
+   which way the chassis art is already drawn. Negative leans the screen forward into
+   your face: the top edge reads as nearer than the bottom and it never looks open. */
 .mb-lid {
-  transform: rotateX(-8deg);
+  transform: rotateX(4deg);
   transform-origin: bottom center;
   will-change: transform;
 }
@@ -388,7 +389,7 @@ label[for] {
    above it. Ride it up while it's shut and settle to centre as it opens, so what you
    actually see stays in the middle. */
 .mb-runway.is-armed .mb-shift {
-  transform: translateY(-33%);
+  transform: translateY(-42%);
 }
 
 /* Fallback for browsers without scroll-driven animations: a one-shot, fired by the
@@ -406,14 +407,14 @@ label[for] {
   .mb-runway.is-armed.is-open .mb-lid {
     animation: lid-open 1s linear both;
     animation-timeline: --laptop;
-    animation-range: cover 30% cover 52%;
+    animation-range: cover 26% cover 48%;
   }
 
   .mb-runway.is-armed .mb-shift,
   .mb-runway.is-armed.is-open .mb-shift {
     animation: lid-settle 1s linear both;
     animation-timeline: --laptop;
-    animation-range: cover 30% cover 52%;
+    animation-range: cover 26% cover 48%;
   }
 }
 
@@ -424,13 +425,13 @@ label[for] {
     transform: rotateX(-72deg);
   }
   to {
-    transform: rotateX(-8deg);
+    transform: rotateX(4deg);
   }
 }
 
 @keyframes lid-settle {
   from {
-    transform: translateY(-33%);
+    transform: translateY(-42%);
   }
   to {
     transform: translateY(0);
@@ -440,7 +441,7 @@ label[for] {
 @media (prefers-reduced-motion: reduce) {
   .mb-runway.is-armed .mb-lid,
   .mb-runway.is-armed.is-open .mb-lid {
-    transform: rotateX(-8deg);
+    transform: rotateX(4deg);
     animation: none;
     animation-timeline: auto;
   }

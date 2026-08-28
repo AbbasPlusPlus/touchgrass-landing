@@ -54,6 +54,17 @@ export function MacbookFrame({ children }: { children: ReactNode }) {
         <div className="absolute overflow-hidden rounded-[6px]" style={SCREEN}>
           {children}
 
+          {/* a soft reflection across the glass — the flat fill was part of what made
+              the lid read as a 2D rectangle */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(158deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,.015) 26%, transparent 46%)",
+            }}
+            aria-hidden="true"
+          />
+
           {/* the notch — a cutout in the panel, so it paints over the screen contents */}
           <div
             className="absolute top-0 left-1/2 -translate-x-1/2 rounded-b-[5px] bg-black"

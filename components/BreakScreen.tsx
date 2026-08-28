@@ -36,6 +36,8 @@ export function BreakScreen() {
   const [clock, setClock] = useState("17:41");
   const [left, setLeft] = useState(START);
   const runway = useRef<HTMLElement>(null);
+  // The break only starts counting once the lid is actually open on it.
+  const [running, setRunning] = useState(false);
 
   // The lid hinges open the first time it scrolls into view. Driven by classes on the
   // element rather than React state: it's a one-way DOM effect, and it means the server
@@ -43,16 +45,21 @@ export function BreakScreen() {
   useEffect(() => {
     const el = runway.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    el.classList.add("is-armed");
+    // Arming is a one-way DOM effect, so it lives on the element rather than in state.
+    if (!reduced) el.classList.add("is-armed");
+
+    // The runway is 200svh, so it can never exceed 50% visible — 0.45 lands just after
+    // the lid has started to lift, which is when the countdown should pick up.
     const io = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
-        el.classList.add("is-open");
+        if (!reduced) el.classList.add("is-open");
+        setRunning(true);
         io.disconnect();
       },
-      { threshold: 0.35 },
+      { threshold: 0.45 },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -71,10 +78,11 @@ export function BreakScreen() {
   }, []);
 
   useEffect(() => {
+    if (!running) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = window.setInterval(() => setLeft((v) => (v <= 0 ? 30 : v - 1)), 1000);
     return () => window.clearInterval(id);
-  }, []);
+  }, [running]);
 
   return (
     <section
@@ -82,10 +90,10 @@ export function BreakScreen() {
       aria-label="What a break looks like"
       /* A tall runway with a pinned viewport inside it. The laptop stays centred on
          screen for the whole of the open, instead of scrolling past while it unfolds. */
-      className="mb-runway relative h-[200svh]"
+      className="mb-runway relative -mt-[26svh] h-[200svh]"
       ref={runway}
     >
-      <div className="sticky top-0 flex h-svh items-center justify-center px-5 sm:px-7">
+      <div className="pointer-events-none sticky top-0 flex h-svh items-center justify-center px-5 sm:px-7">
       <div className="mb-shift w-full max-w-[1080px] drop-shadow-[0_60px_80px_rgba(0,0,0,.55)]">
       <MacbookFrame>
       <div
