@@ -43,8 +43,10 @@ function CommandRow({ label, command }: { label: string; command: string }) {
 export function InstallCommand() {
   return (
     <div className="mt-8">
-      <CommandRow label="Homebrew" command={BREW_COMMAND} />
-      <CommandRow label="No Homebrew? Plain Terminal" command={CURL_COMMAND} />
+      {/* Curl leads: it needs nothing installed first, so it's the one line that works
+          on any Mac. Homebrew follows for the crowd that already lives in it. */}
+      <CommandRow label="Any Mac — nothing to install first" command={CURL_COMMAND} />
+      <CommandRow label="Prefer Homebrew?" command={BREW_COMMAND} />
     </div>
   );
 }
