@@ -32,7 +32,7 @@ export function Features() {
           {/* TGType.title sits at 17pt semibold; the serif is reserved for numerals in the
               app, but on a page a serif subhead reads as the same family. */}
           <h3 className="font-display text-[18.5px] font-medium text-ink">{f.title}</h3>
-          <p className="mt-[7px] text-[14.5px] text-ink-2">{f.body}</p>
+          <p className="mt-[7px] text-[14.5px] text-ink/75">{f.body}</p>
         </div>
         );
       })}

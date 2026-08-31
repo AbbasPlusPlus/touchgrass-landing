@@ -19,8 +19,8 @@ export function Closing() {
         Look up, touch grass.
       </h2>
 
-      <p className="mx-auto mt-5 max-w-xl text-sm opacity-70">
-        Install from Terminal — either line puts the latest version in Applications.
+      <p className="mx-auto mt-5 max-w-xl text-sm text-ink/85">
+        Install from Terminal — one line puts the latest version in Applications.
         The app updates itself after that.
       </p>
       <InstallCommand />
@@ -29,12 +29,12 @@ export function Closing() {
           default — native <details>, no JS — so the dev crowd skims past it and
           everyone else has every step one click away. */}
       <details className="mx-auto mt-6 max-w-xl text-left">
-        <summary className="cursor-pointer list-none text-sm opacity-60 transition hover:opacity-90 [&::-webkit-details-marker]:hidden">
+        <summary className="cursor-pointer list-none text-sm text-ink/75 transition hover:text-ink [&::-webkit-details-marker]:hidden">
           <span className="underline underline-offset-2">
             Never opened Terminal? Here&rsquo;s every step
           </span>
         </summary>
-        <ol className="mt-4 space-y-3 text-sm leading-relaxed opacity-75">
+        <ol className="mt-4 space-y-3 text-sm leading-relaxed text-ink/80">
           <li>
             <span className="font-semibold text-ink">1. Open Terminal.</span> Press{" "}
             <Kbd>⌘</Kbd> and <Kbd>Space</Kbd> together, type{" "}
@@ -66,7 +66,7 @@ export function Closing() {
       </p>
 
       <a
-        className="mx-auto mt-14 inline-flex items-center gap-2 text-sm opacity-60 transition hover:opacity-90"
+        className="mx-auto mt-14 inline-flex items-center gap-2 text-sm text-ink/70 transition hover:text-ink"
         href={site.github}
         target="_blank"
         rel="noopener noreferrer"

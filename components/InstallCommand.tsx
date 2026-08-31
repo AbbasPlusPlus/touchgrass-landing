@@ -12,7 +12,7 @@ function CommandRow({ label, command }: { label: string; command: string }) {
 
   return (
     <div className="mx-auto mt-3 max-w-xl text-left">
-      <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] opacity-55">
+      <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink/70">
         {label}
       </div>
       <button

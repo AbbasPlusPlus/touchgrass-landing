@@ -26,7 +26,7 @@ export function Hero() {
       </h1>
 
       <p
-        className="rise mx-auto mt-5 text-[17px] text-balance text-ink-2 sm:text-[18px]"
+        className="rise mx-auto mt-5 text-[17px] text-balance text-ink/80 sm:text-[18px]"
         style={
           {
             "--rise-delay": ".16s",
