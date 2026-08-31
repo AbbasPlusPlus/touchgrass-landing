@@ -42,25 +42,20 @@ export function Closing() {
             <Kbd>Return</Kbd>. A small window with a blank line opens — that&rsquo;s it.
           </li>
           <li>
-            <span className="font-semibold text-ink">2. Paste the first line.</span> Hit{" "}
-            <em className="not-italic text-ink">Copy</em> on the first line above, click the
+            <span className="font-semibold text-ink">2. Paste the line.</span> Hit{" "}
+            <em className="not-italic text-ink">Copy</em> on the line above, click the
             Terminal window, paste with <Kbd>⌘</Kbd> <Kbd>V</Kbd>, and press{" "}
             <Kbd>Return</Kbd>. It works on any Mac — nothing needs to be installed first.
           </li>
           <li>
-            <span className="font-semibold text-ink">3. Already use Homebrew?</span> The
-            second line does the same thing the way you&rsquo;re used to — either one is
-            fine.
-          </li>
-          <li>
-            <span className="font-semibold text-ink">4. Open the app.</span> When it
+            <span className="font-semibold text-ink">3. Open the app.</span> When it
             finishes, {site.name} is in your Applications folder. Open it once and it lives
             in the menu bar from then on.
           </li>
         </ol>
       </details>
 
-      <p className="mx-auto mt-8 max-w-xl text-sm opacity-60">
+      <p className="mx-auto mt-8 max-w-xl text-sm text-ink/85">
         Prefer a plain download?{" "}
         <a className="underline underline-offset-2" href={site.download} download>
           Grab the zip

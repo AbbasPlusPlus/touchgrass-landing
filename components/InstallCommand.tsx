@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 
-/** The Homebrew-style one-liner: Terminal downloads carry no quarantine flag, so this
+/** The one-line installer: Terminal downloads carry no quarantine flag, so this
  *  path never hits the Gatekeeper "Apple could not verify…" dialog that the zip does. */
-export const BREW_COMMAND = "brew install --cask AbbasPlusPlus/touchgrass/touchgrass";
 export const CURL_COMMAND =
   "curl -fsSL https://raw.githubusercontent.com/AbbasPlusPlus/touchgrass-releases/main/install.sh | sh";
 
@@ -43,10 +42,8 @@ function CommandRow({ label, command }: { label: string; command: string }) {
 export function InstallCommand() {
   return (
     <div className="mt-8">
-      {/* Curl leads: it needs nothing installed first, so it's the one line that works
-          on any Mac. Homebrew follows for the crowd that already lives in it. */}
-      <CommandRow label="Any Mac — nothing to install first" command={CURL_COMMAND} />
-      <CommandRow label="Prefer Homebrew?" command={BREW_COMMAND} />
+      {/* One line, nothing to install first, works on any Mac. */}
+      <CommandRow label="Paste this into Terminal" command={CURL_COMMAND} />
     </div>
   );
 }
