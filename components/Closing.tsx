@@ -20,8 +20,7 @@ export function Closing() {
       </h2>
 
       <p className="mx-auto mt-5 max-w-xl text-sm text-ink/85">
-        Install from Terminal — one line puts the latest version in Applications.
-        The app updates itself after that.
+        Install from Terminal — the app updates itself after that.
       </p>
       <InstallCommand />
 
